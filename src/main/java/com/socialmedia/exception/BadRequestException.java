@@ -1,0 +1,9 @@
+package com.socialmedia.exception;
+
+
+public class BadRequestException extends RuntimeException {
+
+    public BadRequestException(String message) {
+        super(message);
+    }
+}

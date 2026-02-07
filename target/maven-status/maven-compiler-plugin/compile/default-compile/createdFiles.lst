@@ -1,0 +1,14 @@
+com\socialmedia\service\UserService.class
+com\socialmedia\exception\ResourceNotFoundException.class
+com\socialmedia\model\User.class
+com\socialmedia\model\PlatformEntity.class
+com\socialmedia\repository\PostRepository.class
+com\socialmedia\controller\UserController.class
+com\socialmedia\controller\PageController.class
+com\socialmedia\exception\BadRequestException.class
+com\socialmedia\controller\PostController.class
+com\socialmedia\repository\UserRepository.class
+com\socialmedia\service\PostService.class
+com\socialmedia\model\Post.class
+com\socialmedia\exception\GlobalExceptionHandler.class
+com\socialmedia\SocialMediaApplication.class

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusChat — Social Media</title>
+    <!-- Шрифт для красоты -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* ═══ DESIGN TWEAKS (Pastel Pink Theme) ═══ */
+        :root {
+            --pastel-pink: #ffc2d1;
+            --pastel-dark-pink: #fb6f92;
+            /* --pastel-bg: #ffe5ec; Убрали розовый фон */
+            --pastel-card: #fff0f3;
+            --pastel-blue: #cddafd;
+            --pastel-green: #d0f4de;
+        }
+
+        body {
+            background-color: #ffffff; /* Теперь фон белый */
+            font-family: 'Nunito', sans-serif;
+            color: #5d5d5d;
+        }
+
+        /* Navbar Styling */
+        .navbar {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%) !important;
+            box-shadow: 0 4px 15px rgba(255, 105, 135, 0.3);
+            border-bottom: none;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        /* Card Styling - Soft & Round */
+        .card {
+            border: 1px solid #f0f0f0; /* Легкая граница для разделения на белом фоне */
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.15); /* Мягкая розовая тень */
+            background-color: white;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 182, 193, 0.3);
+        }
+        
+        .card-header {
+            border-bottom: 1px solid #ffe3e3;
+            font-weight: bold;
+            padding: 15px 20px;
+            color: white;
+        }
+
+        /* Overriding Bootstrap Colors with Pastels */
+        .bg-primary { background-color: var(--pastel-dark-pink) !important; }
+        .bg-success { background-color: #a2d2ff !important; color: #444; } 
+        .bg-info    { background-color: #ffc8dd !important; color: #555; } 
+        .bg-danger  { background-color: #ffafcc !important; color: #555; } 
+        
+        /* Stats Styling */
+        .stat-card { 
+            text-align: center; 
+            padding: 25px; 
+            border-radius: 20px;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .stat-card.bg-info h2, .stat-card.bg-info p { color: #595959; }
+        .stat-card.bg-success h2, .stat-card.bg-success p { color: #595959; }
+        .stat-card.bg-danger h2, .stat-card.bg-danger p { color: #595959; }
+
+        .stat-card h2 { font-size: 3rem; font-weight: 800; margin-bottom: 5px; }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--pastel-dark-pink);
+            border: none;
+            border-radius: 10px;
+        }
+        .btn-primary:hover { background-color: #e04f75; }
+        
+        .btn-success {
+            background-color: #bde0fe;
+            color: #444;
+            border: none;
+            border-radius: 10px;
+        }
+        .btn-success:hover { background-color: #a2d2ff; color: #222; }
+
+        .btn-outline-danger {
+            color: var(--pastel-dark-pink);
+            border-color: var(--pastel-dark-pink);
+            border-radius: 10px;
+        }
+        .btn-outline-danger:hover {
+            background-color: var(--pastel-dark-pink);
+            color: white;
+        }
+
+        /* Post Styling */
+        .like-btn { 
+            cursor: pointer; 
+            transition: 0.2s; 
+            color: #aaa;
+            background: #fff0f3;
+            padding: 5px 10px;
+            border-radius: 15px;
+        }
+        .like-btn:hover { color: #ff5d8f; background: #ffe5ec; }
+
+        /* Table Styling */
+        .table thead th {
+            border-bottom: 2px solid #ffe3e3;
+            color: var(--pastel-dark-pink);
+        }
+        .table td { border-bottom: 1px solid #fff0f3; }
+        
+        /* Inputs */
+        .form-control {
+            border-radius: 15px;
+            border: 2px solid #ffe5ec;
+            background-color: #fffafb;
+        }
+        .form-control:focus {
+            border-color: var(--pastel-pink);
+            box-shadow: 0 0 0 0.25rem rgba(255, 194, 209, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark mb-5">
+    <div class="container">
+        <a class="navbar-brand" href="/">&#128140; CampusChat</a>
+        <form class="d-flex" action="/search" method="get">
+            <input class="form-control me-2" type="search" name="keyword" placeholder="Search posts..."
+                   th:value="${keyword}">
+            <button class="btn btn-light text-primary fw-bold" style="border-radius: 12px;" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- ═══ Dashboard Stats ═══ -->
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="card stat-card bg-info border-0">
+                <h2 th:text="${userCount}">0</h2>
+                <p>Users</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card bg-success border-0">
+                <h2 th:text="${postCount}">0</h2>
+                <p>Posts</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card bg-danger border-0">
+                <h2 th:text="${totalLikes}">0</h2>
+                <p>Likes</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Search results ═══ -->
+    <div th:if="${keyword != null && !keyword.isEmpty()}" class="alert alert-light text-center shadow-sm" style="color: var(--pastel-dark-pink); border: 1px solid #ffe5ec;">
+        Search results for: <strong th:text="${keyword}"></strong>
+        — <span th:text="${results != null ? results.size() : 0}"></span> posts found
+        <a href="/" class="float-end text-decoration-none text-muted">Clear</a>
+    </div>
+
+    <div class="row">
+
+        <!-- ═══ USERS SECTION ═══ -->
+        <div class="col-md-5">
+            <div class="card mb-4">
+                <div class="card-header bg-primary d-flex justify-content-between align-items-center">
+                    <span>Users</span>
+                    <button class="btn btn-sm btn-light text-primary fw-bold" onclick="showAddUser()">+ Add</button>
+                </div>
+                <div class="card-body p-0">
+                    <div id="addUserForm" style="display:none;" class="p-4 border-bottom bg-white">
+                        <h6 class="text-muted mb-3">New User</h6>
+                        <input id="userName" class="form-control mb-2" placeholder="Name">
+                        <input id="userEmail" class="form-control mb-2" placeholder="Email">
+                        <div class="d-grid gap-2 d-md-block mt-3">
+                            <button class="btn btn-primary btn-sm px-3" onclick="addUser()">Create</button>
+                            <button class="btn btn-light btn-sm text-muted" onclick="hideAddUser()">Cancel</button>
+                        </div>
+                    </div>
+                    <table class="table mb-0">
+                        <thead><tr><th class="ps-4">ID</th><th>Name</th><th>Email</th><th></th></tr></thead>
+                        <tbody>
+                            <tr th:each="user : ${users}">
+                                <td class="ps-4 text-muted" th:text="${user.id}"></td>
+                                <td class="fw-bold" style="color: #555;" th:text="${user.name}"></td>
+                                <td class="text-muted small" th:text="${user.email}"></td>
+                                <td class="text-end pe-3">
+                                    <button class="btn btn-sm btn-outline-danger border-0"
+                                            th:onclick="'deleteUser(' + ${user.id} + ')'">&#10005;</button>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(users)}">
+                                <td colspan="4" class="text-center text-muted py-4">No users yet ✨</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ POSTS SECTION ═══ -->
+        <div class="col-md-7">
+            <div class="card mb-4">
+                <div class="card-header bg-success d-flex justify-content-between align-items-center">
+                    <span>Community Posts</span>
+                    <button class="btn btn-sm btn-light text-muted fw-bold" onclick="showAddPost()">+ New Post</button>
+                </div>
+                <div class="card-body p-0">
+                    <div id="addPostForm" style="display:none;" class="p-4 border-bottom bg-white">
+                        <h6 class="text-muted mb-3">Create Post</h6>
+                        <input id="postAuthorId" class="form-control mb-2" placeholder="Your User ID" type="number">
+                        <textarea id="postContent" class="form-control mb-2" placeholder="What's on your mind?..." rows="3"></textarea>
+                        <div class="d-grid gap-2 d-md-block mt-3">
+                            <button class="btn btn-success btn-sm px-3" onclick="addPost()">Publish</button>
+                            <button class="btn btn-light btn-sm text-muted" onclick="hideAddPost()">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div th:each="post : ${results != null ? results : posts}" class="border-bottom p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-2" 
+                                     style="width: 40px; height: 40px; color: var(--pastel-dark-pink); font-weight: bold;">
+                                     <span th:text="${#strings.substring(post.authorName,0,1)}">A</span>
+                                </div>
+                                <div>
+                                    <strong style="color: #444;" th:text="${post.authorName}">Author</strong>
+                                    <div class="text-muted small" style="font-size: 0.75rem;" th:text="'Post #' + ${post.id}"></div>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm text-muted" th:onclick="'deletePost(' + ${post.id} + ')'">&#10005;</button>
+                        </div>
+                        <p class="mb-3 text-secondary" style="line-height: 1.6;" th:text="${post.content}">Content here</p>
+                        
+                        <span class="like-btn" th:onclick="'likePost(' + ${post.id} + ')'">
+                            &#10084; <span class="fw-bold ms-1" th:text="${post.likes}">0</span>
+                        </span>
+                        <span class="ms-3 text-muted small">
+                            &#128221; <span th:text="${post.wordCount}">0</span> words
+                        </span>
+                    </div>
+
+                    <div th:if="${(results != null ? results : posts).isEmpty()}" class="p-5 text-center text-muted">
+                        <p class="mb-0">No posts yet... be the first! 🌸</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ═══ JavaScript ═══ -->
+<script>
+    function showAddUser() { document.getElementById('addUserForm').style.display = 'block'; }
+    function hideAddUser() { document.getElementById('addUserForm').style.display = 'none'; }
+    function showAddPost() { document.getElementById('addPostForm').style.display = 'block'; }
+    function hideAddPost() { document.getElementById('addPostForm').style.display = 'none'; }
+
+    function addUser() {
+        const name = document.getElementById('userName').value;
+        const email = document.getElementById('userEmail').value;
+        fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email })
+        }).then(r => { if (r.ok) location.reload(); else r.json().then(d => alert(d.message)); });
+    }
+
+    function deleteUser(id) {
+        if (!confirm('Delete user #' + id + '?')) return;
+        fetch('/api/users/' + id, { method: 'DELETE' })
+            .then(() => location.reload());
+    }
+
+    function addPost() {
+        const author_id = parseInt(document.getElementById('postAuthorId').value);
+        const content = document.getElementById('postContent').value;
+        fetch('/api/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ author_id, content })
+        }).then(r => { if (r.ok) location.reload(); else r.json().then(d => alert(d.message)); });
+    }
+
+    function likePost(id) {
+        fetch('/api/posts/' + id + '/like', { method: 'POST' })
+            .then(() => location.reload());
+    }
+
+    function deletePost(id) {
+        if (!confirm('Delete post #' + id + '?')) return;
+        fetch('/api/posts/' + id, { method: 'DELETE' })
+            .then(() => location.reload());
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
